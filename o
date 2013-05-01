@@ -1,0 +1,12 @@
+#!/bin/bash
+
+case $1 in
+   "gno") sudo echo 'start gnome-session'> .xinitrc;;
+   "blby") blobby;;
+   "ff") /home/knoppix/scripts/firefox/firefox/firefox;;
+   "lock") xscreensaver-command --lock;;
+   "alsa") lxterminal -e alsamixer;;
+   "f") pcmanfm;;
+   "neton") sudo pon dsl-provider;;
+   *) $1;;
+esac
