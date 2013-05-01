@@ -1,4 +1,4 @@
-#mounting disks
+#mounting devices
 udisks --mount /dev/sda2 &
 udisks --mount /dev/sda4 &
 udisks --mount /dev/sda5 &
@@ -10,7 +10,7 @@ udisks --mount /dev/sda5 &
 /opt/deadbeef/bin/deadbeef &
 
 #run klipper
-klipper &
+xfce4-clipman &
 
 #starting nm-applet
 #this f******* piece of sh** is not starting on its own!.
