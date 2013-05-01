@@ -1,4 +1,4 @@
-#mounting devices
+#mounting disks
 udisks --mount /dev/sda2 &
 udisks --mount /dev/sda4 &
 udisks --mount /dev/sda5 &
