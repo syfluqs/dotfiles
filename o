@@ -1,7 +1,13 @@
 #!/bin/bash
 
-#mini launcher script: codename-o v0.4
+#mini launcher script: codename-o v0.5
 
+#some standard paths
+docs='/home/knoppix/Documents/'
+pics='/home/knoppix/Pictures/'
+git=${docs}'git/'
+
+#checking out the parameters
 case $1 in
    "aw") sudo echo 'exec awesome'> /home/knoppix/.xinitrc &;;
    "lx") sudo echo 'exec lxsession'> /home/knoppix/.xinitrc &;;
@@ -12,9 +18,11 @@ case $1 in
    "f") pcmanfm &;;
    "neon") sudo pon dsl-provider;;
    "neof") sudo poff -a;;
-   "cr") google-chrome &;;
-   "docs") pcmanfm /home/knoppix/Documents &;;
+   "gc") google-chrome &;;
+   "docs") pcmanfm $docs.$2 &;;
+   "pics") pcmanfm $pics.$2 &;;
    "edit") sudo gedit /usr/local/sbin/o &;;
    "open") sudo pcmanfm /usr/local/sbin/ &;;
+   "git") pcmanfm ${git}${2} &;;
    *) $1 $2 $3 $4 $5 $6 $7 $8 $9 &;;
 esac
