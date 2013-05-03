@@ -1,28 +1,82 @@
 #!/bin/bash
 
-#mini launcher script: codename-o v0.5
+#mini launcher script: codename-o v0.6
 
-#some standard paths
+#some standard paths and variables
+version='0.6'
 docs='/home/knoppix/Documents/'
 pics='/home/knoppix/Pictures/'
 git=${docs}'git/'
+pwd=$(pwd)'/'
+
+#some functions
+checkX()
+{
+if [[ $(cd /tmp && ls -a | grep .X0-lock) = ".X0-lock" ]]
+then
+echo "X is running, falling back..." 
+else
+echo "X is not running. Starting X... "
+startx
+fi
+}
+
+help()
+{
+echo "o launcher v"${version}
+echo ""
+echo "Usage: o [OPTION1] [OPTION2]..."
+echo ""
+echo "Made by syfluqs <syfluqs@gmail.com>"
+}
+
+getnetUsage()
+{
+echo $(ifconfig eth0 | grep "RX bytes")
+}
+
+goHome()
+{
+cd $git'dotfiles'
+echo "Removing previous version."
+rm o
+echo "Copying version "${version}" in repo."
+cp $pwd'o' $git'dotfiles/o'
+echo "All exporting done."
+echo "========================"
+echo "Now uploading to Github."
+echo "Staging to local repo."
+git add o
+echo "Committing to local repo."
+git commit -m 'updated o launcher v'${version}'.'
+echo "Now uploading..."
+echo "Please enter your Github username and password when prompted:"
+git push -u dotfiles master
+echo "All done! Sent o to home."
+}
 
 #checking out the parameters
 case $1 in
-   "aw") sudo echo 'exec awesome'> /home/knoppix/.xinitrc &;;
-   "lx") sudo echo 'exec lxsession'> /home/knoppix/.xinitrc &;;
+   "aw") sudo echo 'exec awesome'> /home/knoppix/.xinitrc && echo 'AwesomeWM is activated.' && checkX;;
+   "lx") sudo echo 'exec lxsession'> /home/knoppix/.xinitrc && echo 'LXDE is activated.' && checkX;;
    "blby") blobby &;;
    "ff") /home/knoppix/scripts/firefox/firefox/firefox &;;
-   "lock") xscreensaver-command --lock &;;
+   "lock") xtrlock &;;
    "alsa") lxterminal -e alsamixer &;;
    "f") pcmanfm &;;
    "neon") sudo pon dsl-provider;;
    "neof") sudo poff -a;;
+   "neus") getnetUsage ;;
    "gc") google-chrome &;;
    "docs") pcmanfm $docs.$2 &;;
    "pics") pcmanfm $pics.$2 &;;
    "edit") sudo gedit /usr/local/sbin/o &;;
    "open") sudo pcmanfm /usr/local/sbin/ &;;
    "git") pcmanfm ${git}${2} &;;
+   "gohome") goHome;;
+   "i") sudo apt-get install $2;;
+   "") help ;;
    *) $1 $2 $3 $4 $5 $6 $7 $8 $9 &;;
 esac
+
+
