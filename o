@@ -1,12 +1,20 @@
 #!/bin/bash
 
+#mini launcher script: codename-o v0.4
+
 case $1 in
-   "gno") sudo echo 'start gnome-session'> .xinitrc;;
-   "blby") blobby;;
-   "ff") /home/knoppix/scripts/firefox/firefox/firefox;;
-   "lock") xscreensaver-command --lock;;
-   "alsa") lxterminal -e alsamixer;;
-   "f") pcmanfm;;
-   "neton") sudo pon dsl-provider;;
-   *) $1;;
+   "aw") sudo echo 'exec awesome'> /home/knoppix/.xinitrc &;;
+   "lx") sudo echo 'exec lxsession'> /home/knoppix/.xinitrc &;;
+   "blby") blobby &;;
+   "ff") /home/knoppix/scripts/firefox/firefox/firefox &;;
+   "lock") xscreensaver-command --lock &;;
+   "alsa") lxterminal -e alsamixer &;;
+   "f") pcmanfm &;;
+   "neon") sudo pon dsl-provider;;
+   "neof") sudo poff -a;;
+   "cr") google-chrome &;;
+   "docs") pcmanfm /home/knoppix/Documents &;;
+   "edit") sudo gedit /usr/local/sbin/o &;;
+   "open") sudo pcmanfm /usr/local/sbin/ &;;
+   *) $1 $2 $3 $4 $5 $6 $7 $8 $9 &;;
 esac
