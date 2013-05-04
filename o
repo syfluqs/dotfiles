@@ -1,82 +1,229 @@
 #!/bin/bash
 
-#mini launcher script: codename-o v0.6
+#mini launcher script: codename-o
+version='1.1'
 
-#some standard paths and variables
-version='0.6'
-docs='/home/knoppix/Documents/'
-pics='/home/knoppix/Pictures/'
+# made by syfluqs <syfluqs@gmail.com>
+
+#settings variables
+use_fancy_text=0
+
+# some standard paths and variables
+docs=${HOME}'/Documents/'
+pics=${home}'/Pictures/'
 git=${docs}'git/'
-pwd=$(pwd)'/'
+sdir=$(cd $(dirname "$0"); pwd)
 
-#some functions
+# some colors down here are used by the msg and err methods
+red='\e[1;31m'
+end='\e[0m'
+cyan='\e[0;36m'
+cyanb='\e[1;36m'
+
+# some functions
+copm()
+{
+
+#copm checks for figlet , for displaying
+#text in fancy format.
+#These should be present if variable use_fancy_text is set to 1
+#Then the user will be asked to install the missing package.
+#If not default echo command will be used.
+
+f=$(command -v figlet)
+
+if [[ -f $f ]]; then f=1; else f=0; fi
+
+if [[ $use_fancy_text -eq 1 && $f -eq 0 ]]
+then
+inst "figlet" "sys"
+fi
+
+}
+
+#Calling copm
+copm
+
+msg()
+{
+
+#msg displays standard messages in cyan color.
+
+echo -e ${cyan}${1}${end}
+}
+
+err()
+{
+#err displays standard errors in red bold color.
+echo -e ${red}${1}${end}
+}
+
 checkX()
 {
-if [[ $(cd /tmp && ls -a | grep .X0-lock) = ".X0-lock" ]]
+#checks if X is running, if not starts X
+if [[ -f /tmp/.X0-lock ]]
 then
-echo "X is running, falling back..." 
+msg "X is running, falling back..." 
 else
-echo "X is not running. Starting X... "
+msg "X is not running. Starting X... "
 startx
 fi
 }
 
 help()
 {
-echo "o launcher v"${version}
+#just displays some text if o is run without arguements.
+msg "o launcher v"$version
 echo ""
 echo "Usage: o [OPTION1] [OPTION2]..."
 echo ""
 echo "Made by syfluqs <syfluqs@gmail.com>"
 }
 
-getnetUsage()
+inst()
 {
-echo $(ifconfig eth0 | grep "RX bytes")
+#installs provided package name.
+#if an extra string sys is provided it first asks 
+#user whether to install the package or not.
+
+if [[ $2 -eq "sys" ]]
+then
+echo -e "The package "${cyan}${1}${end}" is needed by o launcher but not found \non the system. Download and install "${1}"? [y/n]" && read choice
+{
+if [[ ${choice} == "y" || ${choice} == "yes" ]]
+then
+sudo apt-get install ${1} && msg "Successfully installed "${1}"."
+else
+msg "Installation aborted."
+fi
+}
+else
+sudo apt-get install ${1} && msg "Successfully installed "${1}"."
+fi
 }
 
-goHome()
+getnetUsage()
 {
-cd $git'dotfiles'
-echo "Removing previous version."
-rm o
-echo "Copying version "${version}" in repo."
-cp $pwd'o' $git'dotfiles/o'
-echo "All exporting done."
-echo "========================"
-echo "Now uploading to Github."
-echo "Staging to local repo."
-git add o
-echo "Committing to local repo."
-git commit -m 'updated o launcher v'${version}'.'
-echo "Now uploading..."
-echo "Please enter your Github username and password when prompted:"
-git push -u dotfiles master
-echo "All done! Sent o to home."
+#displays total transfer bytes through eth0 by default.
+down=$(ifconfig eth0 | grep "RX bytes" | cut -d'(' -f 2 | cut -d')' -f 1 | cut -d' ' -f 1)
+up=$(ifconfig eth0 | grep "RX bytes" | cut -d'(' -f 3 | cut -d')' -f 1 | cut -d' ' -f 1)
+total=$(echo ${down}+${up} | bc)
+
+if [[ $use_fancy_text -eq 1 ]]
+then
+figlet -c -k ${total}" MiB"
+else
+err ${total}" MiB"
+fi
+#err ${total}" Mib"
 }
+
+getUptime()
+{
+#displays uptime
+if [[ $use_fancy_text -eq 1 ]]
+then
+figlet -c -k $(uptime | cut -d',' -f 1 | cut -d' ' -f 5)
+else
+err $(uptime | cut -d',' -f 1 | cut -d' ' -f 5)
+fi
+#err $(uptime | cut -d',' -f 1 | cut -d' ' -f 5)
+}
+
+goGit()
+{
+#goGit automatically stages, commits and pushes o files
+#dotfiles repo to github.
+
+cd $git'dotfiles' &&
+msg "Removing previous version." &&
+rm -f o &&
+msg "Copying version "${version}" in repo." &&
+cp $sdir'/o' $git'dotfiles/o' &&
+msg "All exporting done." &&
+msg "========================" &&
+msg "Now uploading to Github." &&
+msg "Staging to local repo." &&
+git add o &&
+msg "Committing to local repo." &&
+git commit -m 'updated o launcher v'${version}'.' &&
+msg "Now uploading..." &&
+msg "Please enter your Github username and password when prompted:" &&
+git push -u dotfiles master &&
+if [[ $c -eq 1 && $use_fancy_text -eq 1 ]]
+then
+cowsay "All done! Sent o to Github."
+else
+msg "All done! Sent o to Github."
+fi
+}
+
+backup()
+{
+#copies the o file to ~/.o/bak before editing
+msg "Creating a backup..."
+if [[ ! -f ${HOME}/.o/bak/o ]]; then touch ${HOME}/.o/bak/o; fi
+cp -T -f ${sdir}/o ${HOME}/.o/bak/o
+#making a timestamp
+echo "# Last backup: "$(echo "%r" | date) >> ${HOME}/.o/bak/o
+}
+
+kll()
+{
+#kills the process whose pid or name is supplied as parameter.
+#first determining whether pid or name is supplied.
+if [[ $(echo ${1} | grep "^-\?[0-9]*$") == ${1} ]]
+then
+kill ${1}
+else
+killall ${1}
+fi
+}
+
+prs()
+{
+ps cat | grep ${1}
+}
+
+
+#make ~/.o directory and subdirectories if not present.
+#~/.o is needed for storing backups in bak and temp files
+#in tmp dir.
+if [[ ! -d ${HOME}/.o ]]; then msg "On an unrelated note a ~/.o directory was not found, so I made one..." && mkdir ${HOME}/.o ${HOME}/.o/tmp ${HOME}/.o/bak ${HOME}/.o/log; fi
 
 #checking out the parameters
 case $1 in
-   "aw") sudo echo 'exec awesome'> /home/knoppix/.xinitrc && echo 'AwesomeWM is activated.' && checkX;;
-   "lx") sudo echo 'exec lxsession'> /home/knoppix/.xinitrc && echo 'LXDE is activated.' && checkX;;
+   "aw") sudo echo 'exec awesome'> ${HOME}/.xinitrc && msg 'AwesomeWM is activated.' && checkX;;
+   "lx") sudo echo 'exec lxsession'> ${HOME}/.xinitrc && msg 'LXDE is activated.' && checkX;;
    "blby") blobby &;;
    "ff") /home/knoppix/scripts/firefox/firefox/firefox &;;
-   "lock") xtrlock &;;
+   "lk") clear && figlet -c -k JARVIS Locked && msg "Do NOT touch anything. You are being seen." && xtrlock && clear;;
    "alsa") lxterminal -e alsamixer &;;
    "f") pcmanfm &;;
+   "s") startx &;;
    "neon") sudo pon dsl-provider;;
    "neof") sudo poff -a;;
    "neus") getnetUsage ;;
+   "neco") sudo pppoeconf ;;
+   "up") getUptime ;;
    "gc") google-chrome &;;
    "docs") pcmanfm $docs.$2 &;;
    "pics") pcmanfm $pics.$2 &;;
-   "edit") sudo gedit /usr/local/sbin/o &;;
+   "edit") backup && sudo gedit /usr/local/sbin/o &;;
    "open") sudo pcmanfm /usr/local/sbin/ &;;
    "git") pcmanfm ${git}${2} &;;
-   "gohome") goHome;;
-   "i") sudo apt-get install $2;;
+   "gogit") goGit;;
+   "bak") backup ;;
+   "msg") msg ${2};;
+   "i") inst $2;;
+   "k") kll $2 ;;
+   "p") prs $2;;
    "") help ;;
+   #if parameters doesn't match then just run what is passed.
    *) $1 $2 $3 $4 $5 $6 $7 $8 $9 &;;
 esac
+
+#Good bye...
+exit 0
 
 
