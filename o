@@ -6,7 +6,7 @@ version='1.1'
 # made by syfluqs <syfluqs@gmail.com>
 
 #settings variables
-use_fancy_text=0
+use_fancy_text=1
 
 # some standard paths and variables
 docs=${HOME}'/Documents/'
