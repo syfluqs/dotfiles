@@ -31,8 +31,10 @@ copm()
 #If not default echo command will be used.
 
 f=$(command -v figlet)
+c=$(command -v cowsay)
 
 if [[ -f $f ]]; then f=1; else f=0; fi
+if [[ -f $c ]]; then c=1; else c=0; fi
 
 if [[ $use_fancy_text -eq 1 && $f -eq 0 ]]
 then
