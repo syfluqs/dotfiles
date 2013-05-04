@@ -1,11 +1,9 @@
 #!/bin/bash
 
-#mini launcher script: codename-o
-version='0.8'
-
-#Made by syfluqs <syfluqs@gmail.com>
+#mini launcher script: codename-o v0.6
 
 #some standard paths and variables
+version='0.6'
 docs='/home/knoppix/Documents/'
 pics='/home/knoppix/Pictures/'
 git=${docs}'git/'
@@ -54,7 +52,7 @@ git commit -m 'updated o launcher v'${version}'.'
 echo "Now uploading..."
 echo "Please enter your Github username and password when prompted:"
 git push -u dotfiles master
-cowsay "All done! Sent o to Github."
+echo "All done! Sent o to home."
 }
 
 #checking out the parameters
