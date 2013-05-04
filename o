@@ -189,7 +189,7 @@ ps cat | grep ${1}
 #make ~/.o directory and subdirectories if not present.
 #~/.o is needed for storing backups in bak and temp files
 #in tmp dir.
-if [[ ! -d ${HOME}/.o ]]; then msg "On an unrelated note a ~/.o directory was not found, so I made one..." && mkdir ${HOME}/.o ${HOME}/.o/tmp ${HOME}/.o/bak ${HOME}/.o/log; fi
+if [[ ! -d ${HOME}/.o ]]; then msg "On an unrelated note a ~/.o directory was not found, so I am making one..." && mkdir ${HOME}/.o ${HOME}/.o/tmp ${HOME}/.o/bak ${HOME}/.o/log; fi
 
 #checking out the parameters
 case $1 in
