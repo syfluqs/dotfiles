@@ -146,7 +146,7 @@ msg "Now uploading to Github." &&
 msg "Staging to local repo." &&
 git add o &&
 msg "Committing to local repo." &&
-git commit -m 'updated o launcher v'${version}'.' &&
+git commit -m 'updated o launcher v'${version}'.'
 msg "Now uploading..." &&
 msg "Please enter your Github username and password when prompted:" &&
 git push -u dotfiles master &&
