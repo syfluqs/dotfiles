@@ -203,11 +203,11 @@ echo "for (( ; ; )); do clear;o neus "l"; sleep 1.5; done" >> $HOME/.o/nulooper
 
 lxterminal --geometry=30x7 -t "nulooper" -e "bash $HOME/.o/nulooper"
 sleep 0.05
-window_id=$(wmctrl -l | grep "$1" | tail -1 | cut -f1 -d" ")
+#window_id=$(wmctrl -l | grep "$1" | tail -1 | cut -f1 -d" ")
 #wmctrl -i -r \"$window_id\" -e 0,0,0,150,250
 
 winwidth=250
-winheight=150
+winheight=165
 
 #getting screen res and adjusting position of nulooper window.
 height=$(xdpyinfo | grep dimensions | cut -d' ' -f 7 | cut -d'x' -f 2)
@@ -216,6 +216,32 @@ xpos=$(echo $width-$winwidth | bc)
 ypos=$(echo $height-$winheight | bc)
 
 wmctrl -r "nulooper" -e 0,$xpos,$ypos,$winwidth,$winheight
+}
+
+frontend()
+{
+#checking if frontend module is present
+msg "Repairing/creating frontend module..."
+echo "#!/bin/bash" > $HOME/.o/frontend
+echo "cd \$HOME"
+#echo "export PS1=\"\e[1;32mjarvis:\e[0m\"" >> $HOME/.o/frontend
+echo "for  (( ; ; )); do printf '\e[1;32m%-6s\e[m' \"jarvis: \" && read cmd && \${cmd} ; done" >> $HOME/.o/frontend
+
+lxterminal --geometry=30x7 -t "o launcher" -e "bash $HOME/.o/frontend"
+sleep 0.05
+#window_id=$(wmctrl -l | grep "$1" | tail -1 | cut -f1 -d" ")
+#wmctrl -i -r \"$window_id\" -e 0,0,0,150,250
+
+fwinwidth=250
+fwinheight=165
+
+#getting screen res and adjusting position of nulooper window.
+fheight=$(xdpyinfo | grep dimensions | cut -d' ' -f 7 | cut -d'x' -f 2)
+fwidth=$(xdpyinfo | grep dimensions | cut -d' ' -f 7 | cut -d'x' -f 1)
+fxpos=$(echo $fwidth-$fwinwidth | bc)
+fypos=$(echo $fheight-10-$fwinheight*2 | bc)
+
+wmctrl -r "o launcher" -e 0,$fxpos,$fypos,$fwinwidth,$fwinheight
 }
 
 #make ~/.o directory and subdirectories if not present.
@@ -233,6 +259,7 @@ case $1 in
    "alsa") lxterminal -e alsamixer &;;
    "f") pcmanfm &;;
    "s") startx &;;
+   "front") frontend &;;
    "neongc") sudo pon dsl-provider && nulooper && google-chrome &;;
    "neon") sudo pon dsl-provider;;
    "neof") sudo poff -a;;
@@ -251,6 +278,7 @@ case $1 in
    "i") inst $2;;
    "k") kll $2 ;;
    "p") prs $2;;
+   "c") clear ;;
    "") help ;;
    "nulooper") nulooper;;
    #if parameters doesn't match then just run what is passed.
@@ -266,3 +294,19 @@ exit 0
 #gets the window ID of most recent opened window
 #
 #window_id=$(wmctrl -l | grep "$1" | tail -1 | cut -f1 -d" ")
+#
+#BLACK=$(tput setaf 0)
+#RED=$(tput setaf 1)
+#GREEN=$(tput setaf 2)
+#YELLOW=$(tput setaf 3)
+#LIME_YELLOW=$(tput setaf 190)
+#POWDER_BLUE=$(tput setaf 153)
+#BLUE=$(tput setaf 4)
+#MAGENTA=$(tput setaf 5)
+#CYAN=$(tput setaf 6)
+#WHITE=$(tput setaf 7)
+#BRIGHT=$(tput bold)
+#NORMAL=$(tput sgr0)
+#BLINK=$(tput blink)
+#REVERSE=$(tput smso)
+#UNDERLINE=$(tput smul)
