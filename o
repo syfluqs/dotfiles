@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #mini launcher script: codename-o
-version='1.1'
+version='1.2'
 
 # made by syfluqs <syfluqs@gmail.com>
 
@@ -88,17 +88,17 @@ inst()
 #if an extra string sys is provided it first asks 
 #user whether to install the package or not.
 
-if [[ $2 -eq "sys" ]]
+if [[ $2 == "sys" ]]
 then
 echo -e "The package "${cyan}${1}${end}" is needed by o launcher but not found \non the system. Download and install "${1}"? [y/n]" && read choice
-{
+
 if [[ ${choice} == "y" || ${choice} == "yes" ]]
 then
 sudo apt-get install ${1} && msg "Successfully installed "${1}"."
 else
 msg "Installation aborted."
 fi
-}
+
 else
 sudo apt-get install ${1} && msg "Successfully installed "${1}"."
 fi
@@ -107,15 +107,21 @@ fi
 getnetUsage()
 {
 #displays total transfer bytes through eth0 by default.
-down=$(ifconfig eth0 | grep "RX bytes" | cut -d'(' -f 2 | cut -d')' -f 1 | cut -d' ' -f 1)
-up=$(ifconfig eth0 | grep "RX bytes" | cut -d'(' -f 3 | cut -d')' -f 1 | cut -d' ' -f 1)
-total=$(echo ${down}+${up} | bc)
+down=$(ifconfig eth0 | grep "RX bytes" | cut -d':' -f 2 | cut -d' ' -f 1)
+up=$(ifconfig eth0 | grep "RX bytes" | cut -d':' -f 3 | cut -d' ' -f 1)
+total=$(echo scale=2 \; \(${down}+${up}\)/1000000 | bc)
 
 if [[ $use_fancy_text -eq 1 ]]
 then
-figlet -c -k ${total}" MiB"
+if [[ ! ${1} == "l" ]]
+then
+figlet -c ${total}
 else
-err ${total}" MiB"
+figlet -l ${total}
+fi
+
+else
+err ${total}
 fi
 #err ${total}" Mib"
 }
@@ -187,6 +193,24 @@ prs()
 ps cat | grep ${1}
 }
 
+nulooper()
+{
+lxterminal --geometry=30x7 -t "nulooper" -e "bash $HOME/.o/nulooper"
+sleep 0.05
+window_id=$(wmctrl -l | grep "$1" | tail -1 | cut -f1 -d" ")
+#wmctrl -i -r \"$window_id\" -e 0,0,0,150,250
+
+winwidth=250
+winheight=150
+
+#getting screen res and adjusting position of nulooper window.
+height=$(xdpyinfo | grep dimensions | cut -d' ' -f 7 | cut -d'x' -f 2)
+width=$(xdpyinfo | grep dimensions | cut -d' ' -f 7 | cut -d'x' -f 1)
+xpos=$(echo $width-$winwidth | bc)
+ypos=$(echo $height-$winheight | bc)
+
+wmctrl -r "nulooper" -e 0,$xpos,$ypos,$winwidth,$winheight
+}
 
 #make ~/.o directory and subdirectories if not present.
 #~/.o is needed for storing backups in bak and temp files
@@ -199,13 +223,14 @@ case $1 in
    "lx") sudo echo 'exec lxsession'> ${HOME}/.xinitrc && msg 'LXDE is activated.' && checkX;;
    "blby") blobby &;;
    "ff") /home/knoppix/scripts/firefox/firefox/firefox &;;
-   "lk") clear && figlet -c -k JARVIS Locked && msg "Do NOT touch anything. You are being seen." && xtrlock && clear;;
+   "lk") clear && figlet -c -k JARVIS Locked && msg "Do NOT touch anything. You are being watched." && xtrlock && clear;;
    "alsa") lxterminal -e alsamixer &;;
    "f") pcmanfm &;;
    "s") startx &;;
+   "neongc") sudo pon dsl-provider && google-chrome &;;
    "neon") sudo pon dsl-provider;;
    "neof") sudo poff -a;;
-   "neus") getnetUsage ;;
+   "neus") getnetUsage $2;;
    "neco") sudo pppoeconf ;;
    "up") getUptime ;;
    "gc") google-chrome &;;
@@ -221,6 +246,7 @@ case $1 in
    "k") kll $2 ;;
    "p") prs $2;;
    "") help ;;
+   "nulooper") nulooper;;
    #if parameters doesn't match then just run what is passed.
    *) $1 $2 $3 $4 $5 $6 $7 $8 $9 &;;
 esac
@@ -228,4 +254,9 @@ esac
 #Good bye...
 exit 0
 
-
+#snippets:
+#focused=$(xprop -root 32x '\t$0' _NET_ACTIVE_WINDOW | cut -f 2)
+#
+#gets the window ID of most recent opened window
+#
+#window_id=$(wmctrl -l | grep "$1" | tail -1 | cut -f1 -d" ")
