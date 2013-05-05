@@ -195,6 +195,12 @@ ps cat | grep ${1}
 
 nulooper()
 {
+
+#checking if nulooper module is present
+msg "Repairing/creating nulooper module..."
+echo "#!/bin/bash" > $HOME/.o/nulooper
+echo "for (( ; ; )); do clear;o neus "l"; sleep 1.5; done" >> $HOME/.o/nulooper
+
 lxterminal --geometry=30x7 -t "nulooper" -e "bash $HOME/.o/nulooper"
 sleep 0.05
 window_id=$(wmctrl -l | grep "$1" | tail -1 | cut -f1 -d" ")
@@ -227,7 +233,7 @@ case $1 in
    "alsa") lxterminal -e alsamixer &;;
    "f") pcmanfm &;;
    "s") startx &;;
-   "neongc") sudo pon dsl-provider && google-chrome &;;
+   "neongc") sudo pon dsl-provider && nulooper && google-chrome &;;
    "neon") sudo pon dsl-provider;;
    "neof") sudo poff -a;;
    "neus") getnetUsage $2;;
