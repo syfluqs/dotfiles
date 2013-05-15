@@ -13,6 +13,7 @@ docs=${HOME}'/Documents/'
 pics=${home}'/Pictures/'
 git=${docs}'git/'
 sdir=$(cd $(dirname "$0"); pwd)
+browser=google-chrome
 
 # some colors down here are used by the msg and err methods
 red='\e[1;31m'
@@ -244,6 +245,32 @@ fypos=$(echo $fheight-10-$fwinheight*2 | bc)
 wmctrl -r "o launcher" -e 0,$fxpos,$fypos,$fwinwidth,$fwinheight
 }
 
+browser()
+{
+#making some bookmarks.
+declare -a bookmarks=("git http://www.github.com","g http://www.google.com")
+arg=$1' '$2' '$3
+msg $arg
+
+#checking if provided arguement is a bookmark, if 
+#not directly pass it on to the browser.
+for i in {0..$(echo ${#bookmarks[@]})}
+do
+if [[ $(echo ${bookmarks[${i}]} | cut -d' ' -f 1) == $arg ]]
+then
+$browser $(echo ${bookmarks[${i}]} | cut -d' ' -f 2)
+else
+$browser "http://www.google.co.in/search?q="${arg}
+fi
+done
+}
+
+blue()
+{
+bluetooth-applet &
+bluetooth-sendto &
+}
+
 #make ~/.o directory and subdirectories if not present.
 #~/.o is needed for storing backups in bak and temp files
 #in tmp dir.
@@ -253,11 +280,13 @@ if [[ ! -d ${HOME}/.o ]]; then msg "On an unrelated note a ~/.o directory was no
 case $1 in
    "aw") sudo echo 'exec awesome'> ${HOME}/.xinitrc && msg 'AwesomeWM is activated.' && checkX;;
    "lx") sudo echo 'exec lxsession'> ${HOME}/.xinitrc && msg 'LXDE is activated.' && checkX;;
+   "bb") sudo echo 'exec blackbox'> $HOME/.xinitrc && msg 'Blackbox is activated.' && checkX;;
+   "bsend") blue ;;
    "blby") blobby &;;
    "ff") /home/knoppix/scripts/firefox/firefox/firefox &;;
    "lk") clear && figlet -c -k JARVIS Locked && msg "Do NOT touch anything. You are being watched." && xtrlock && clear;;
    "alsa") lxterminal -e alsamixer &;;
-   "f") pcmanfm &;;
+   "f") pcmanfm $2 &;;
    "s") startx &;;
    "front") frontend &;;
    "neongc") sudo pon dsl-provider && nulooper && google-chrome &;;
@@ -266,7 +295,7 @@ case $1 in
    "neus") getnetUsage $2;;
    "neco") sudo pppoeconf ;;
    "up") getUptime ;;
-   "gc") google-chrome &;;
+   "gc") google-chrome --window-position=0,0 &;;
    "docs") pcmanfm $docs.$2 &;;
    "pics") pcmanfm $pics.$2 &;;
    "edit") backup && sudo gedit /usr/local/sbin/o &;;
@@ -281,6 +310,7 @@ case $1 in
    "c") clear ;;
    "") help ;;
    "nulooper") nulooper;;
+   "m") deadbeef --play-pause ;;
    #if parameters doesn't match then just run what is passed.
    *) $1 $2 $3 $4 $5 $6 $7 $8 $9 &;;
 esac
