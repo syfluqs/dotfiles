@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #mini launcher script: codename-o
-version='1.2'
+version='1.4'
 
 # made by syfluqs <syfluqs@gmail.com>
 
@@ -14,6 +14,7 @@ pics=${home}'/Pictures/'
 git=${docs}'git/'
 sdir=$(cd $(dirname "$0"); pwd)
 browser=google-chrome
+editor=gedit
 
 # some colors down here are used by the msg and err methods
 red='\e[1;31m'
@@ -112,19 +113,7 @@ down=$(ifconfig eth0 | grep "RX bytes" | cut -d':' -f 2 | cut -d' ' -f 1)
 up=$(ifconfig eth0 | grep "RX bytes" | cut -d':' -f 3 | cut -d' ' -f 1)
 total=$(echo scale=2 \; \(${down}+${up}\)/1000000 | bc)
 
-if [[ $use_fancy_text -eq 1 ]]
-then
-if [[ ! ${1} == "l" ]]
-then
-figlet -c ${total}
-else
-figlet -l ${total}
-fi
-
-else
-err ${total}
-fi
-#err ${total}" Mib"
+echo ${total}
 }
 
 getUptime()
@@ -191,58 +180,13 @@ fi
 
 prs()
 {
-ps cat | grep ${1}
-}
-
-nulooper()
-{
-
-#checking if nulooper module is present
-msg "Repairing/creating nulooper module..."
-echo "#!/bin/bash" > $HOME/.o/nulooper
-echo "for (( ; ; )); do clear;o neus "l"; sleep 1.5; done" >> $HOME/.o/nulooper
-
-lxterminal --geometry=30x7 -t "nulooper" -e "bash $HOME/.o/nulooper"
-sleep 0.05
-#window_id=$(wmctrl -l | grep "$1" | tail -1 | cut -f1 -d" ")
-#wmctrl -i -r \"$window_id\" -e 0,0,0,150,250
-
-winwidth=250
-winheight=165
-
-#getting screen res and adjusting position of nulooper window.
-height=$(xdpyinfo | grep dimensions | cut -d' ' -f 7 | cut -d'x' -f 2)
-width=$(xdpyinfo | grep dimensions | cut -d' ' -f 7 | cut -d'x' -f 1)
-xpos=$(echo $width-$winwidth | bc)
-ypos=$(echo $height-$winheight | bc)
-
-wmctrl -r "nulooper" -e 0,$xpos,$ypos,$winwidth,$winheight
-}
-
-frontend()
-{
-#checking if frontend module is present
-msg "Repairing/creating frontend module..."
-echo "#!/bin/bash" > $HOME/.o/frontend
-echo "cd \$HOME"
-#echo "export PS1=\"\e[1;32mjarvis:\e[0m\"" >> $HOME/.o/frontend
-echo "for  (( ; ; )); do printf '\e[1;32m%-6s\e[m' \"jarvis: \" && read cmd && \${cmd} ; done" >> $HOME/.o/frontend
-
-lxterminal --geometry=30x7 -t "o launcher" -e "bash $HOME/.o/frontend"
-sleep 0.05
-#window_id=$(wmctrl -l | grep "$1" | tail -1 | cut -f1 -d" ")
-#wmctrl -i -r \"$window_id\" -e 0,0,0,150,250
-
-fwinwidth=250
-fwinheight=165
-
-#getting screen res and adjusting position of nulooper window.
-fheight=$(xdpyinfo | grep dimensions | cut -d' ' -f 7 | cut -d'x' -f 2)
-fwidth=$(xdpyinfo | grep dimensions | cut -d' ' -f 7 | cut -d'x' -f 1)
-fxpos=$(echo $fwidth-$fwinwidth | bc)
-fypos=$(echo $fheight-10-$fwinheight*2 | bc)
-
-wmctrl -r "o launcher" -e 0,$fxpos,$fypos,$fwinwidth,$fwinheight
+if [[ $# -eq 0 ]]
+then
+ps cat
+else
+echo 
+ps cat | grep ${1} -w
+fi
 }
 
 browser()
@@ -271,6 +215,11 @@ bluetooth-applet &
 bluetooth-sendto &
 }
 
+ed()
+{
+backup && sudo ${editor} /usr/local/sbin/o &
+}
+
 #make ~/.o directory and subdirectories if not present.
 #~/.o is needed for storing backups in bak and temp files
 #in tmp dir.
@@ -288,17 +237,16 @@ case $1 in
    "alsa") lxterminal -e alsamixer &;;
    "f") pcmanfm $2 &;;
    "s") startx &;;
-   "front") frontend &;;
-   "neongc") sudo pon dsl-provider && nulooper && google-chrome &;;
+   "neongc") sudo pon dsl-provider && google-chrome 2> /dev/null &;;
    "neon") sudo pon dsl-provider;;
    "neof") sudo poff -a;;
    "neus") getnetUsage $2;;
    "neco") sudo pppoeconf ;;
    "up") getUptime ;;
-   "gc") google-chrome --window-position=0,0 &;;
+   "gc") google-chrome 2> /dev/null &;;
    "docs") pcmanfm $docs.$2 &;;
    "pics") pcmanfm $pics.$2 &;;
-   "edit") backup && sudo gedit /usr/local/sbin/o &;;
+   "ed") ed $1 $2 $3 $4;;
    "open") sudo pcmanfm /usr/local/sbin/ &;;
    "git") pcmanfm ${git}${2} &;;
    "gogit") goGit;;
@@ -309,8 +257,7 @@ case $1 in
    "p") prs $2;;
    "c") clear ;;
    "") help ;;
-   "nulooper") nulooper;;
-   "m") deadbeef --play-pause ;;
+   "m") deadbeef --play-pause &;;
    #if parameters doesn't match then just run what is passed.
    *) $1 $2 $3 $4 $5 $6 $7 $8 $9 &;;
 esac
