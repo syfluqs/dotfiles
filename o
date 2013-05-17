@@ -1,9 +1,26 @@
 #!/bin/bash
 
 #mini launcher script: codename-o
-version='1.4'
+version='1.5'
 
 # made by syfluqs <syfluqs@gmail.com>
+
+######################################
+#	 _____     ____              #
+#	|_   _|__ |  _ \  ___        #
+#	  | |/ _ \| | | |/ _ \       #
+#	  | | (_) | |_| | (_) |      #
+#	  |_|\___/|____/ \___/       #
+#                                    #
+######################################
+#                                    #
+# => add google chrome searching and #
+#    bookmarking support.            #
+# => add daemon mode.                #
+# => add editor mode.                #
+# => add a common script editor mode #
+#				     #
+######################################
 
 #settings variables
 use_fancy_text=1
@@ -182,10 +199,9 @@ prs()
 {
 if [[ $# -eq 0 ]]
 then
-ps cat
+ps -u root cat
 else
-echo 
-ps cat | grep ${1} -w
+ps -u root cat | grep ${1} ${2}
 fi
 }
 
@@ -220,6 +236,7 @@ ed()
 backup && sudo ${editor} /usr/local/sbin/o &
 }
 
+
 #make ~/.o directory and subdirectories if not present.
 #~/.o is needed for storing backups in bak and temp files
 #in tmp dir.
@@ -246,7 +263,7 @@ case $1 in
    "gc") google-chrome 2> /dev/null &;;
    "docs") pcmanfm $docs.$2 &;;
    "pics") pcmanfm $pics.$2 &;;
-   "ed") ed $1 $2 $3 $4;;
+   "edit") ed $1 $2 $3 $4 ;;
    "open") sudo pcmanfm /usr/local/sbin/ &;;
    "git") pcmanfm ${git}${2} &;;
    "gogit") goGit;;
@@ -254,7 +271,7 @@ case $1 in
    "msg") msg ${2};;
    "i") inst $2;;
    "k") kll $2 ;;
-   "p") prs $2;;
+   "p") prs $2 $3;;
    "c") clear ;;
    "") help ;;
    "m") deadbeef --play-pause &;;
