@@ -71,10 +71,10 @@ po::powerokwait:/etc/init.d/powerfail stop
 
 1:12345:respawn:/sbin/getty 38400 tty1
 2:12345:respawn:/sbin/getty 38400 tty2
-3:12345:respawn:/sbin/getty 38400 tty3
-4:12345:respawn:/sbin/getty 38400 tty4
-5:12345:respawn:/sbin/getty 38400 tty5
-6:12345:respawn:/sbin/getty 38400 tty6
+#3:12345:respawn:/sbin/getty 38400 tty3
+#4:12345:respawn:/sbin/getty 38400 tty4
+#5:12345:respawn:/sbin/getty 38400 tty5
+#6:12345:respawn:/sbin/getty 38400 tty6
 
 #== edited above this ==
 
