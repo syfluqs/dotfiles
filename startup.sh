@@ -12,11 +12,22 @@ udisks --mount /dev/sda5 &
 #run klipper
 xfce4-clipman &
 
-#starting nm-applet
-#this f******* piece of sh** is not starting on its own!.
-nm-applet
+#sakura -e "export PS1=\"\[\e[0;33m\]\u@\h:\w\$\[\e[00m\] \"" &
+sakura &
 
-mplayer /home/knoppix/scripts/start.ogg &
+conky &
+cd 
+conky -c .conkytime &
+conky -c .conkycpu &
 
-#xcompmgr
-#xcompmgr -n
+wallpaper="/home/knoppix/Pictures/walls/441567.jpg"
+feh --bg-fill ${wallpaper}
+
+lxpanel -p syfluqs1 &
+
+o comp &
+
+sleep 3
+wmctrl -c "DeaDBeeF"
+
+exit 0
