@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #mini launcher script: codename-o
-version='1.5'
+version='1.8'
 
 # made by syfluqs <syfluqs@gmail.com>
 
@@ -17,8 +17,8 @@ version='1.5'
 # => add google chrome searching and #
 #    bookmarking support.            #
 # => add daemon mode.                #
-# => add editor mode.                #
-# => add a common script editor mode #
+# => add logging tool                #
+# => add todo functionality          #
 #				     #
 ######################################
 
@@ -27,17 +27,26 @@ use_fancy_text=1
 
 # some standard paths and variables
 docs=${HOME}'/Documents/'
-pics=${home}'/Pictures/'
+down=${HOME}'/Downloads/'
 git=${docs}'git/'
 sdir=$(cd $(dirname "$0"); pwd)
+todofile=${HOME}'/.o/todo'
 browser=google-chrome
-editor=gedit
+
+editor()
+{
+#lxterminal -e "vim "$1
+gedit $@
+}
 
 # some colors down here are used by the msg and err methods
 red='\e[1;31m'
 end='\e[0m'
 cyan='\e[0;36m'
 cyanb='\e[1;36m'
+tdred='\e[1;31m'
+tdgreen='\e[0;32m'
+tdwhite='\e[0;37m'
 
 # some functions
 copm()
@@ -176,7 +185,7 @@ fi
 backup()
 {
 #copies the o file to ~/.o/bak before editing
-msg "Creating a backup..."
+#msg "Creating a backup..."
 if [[ ! -f ${HOME}/.o/bak/o ]]; then touch ${HOME}/.o/bak/o; fi
 cp -T -f ${sdir}/o ${HOME}/.o/bak/o
 #making a timestamp
@@ -233,20 +242,79 @@ bluetooth-sendto &
 
 ed()
 {
-backup && sudo ${editor} /usr/local/sbin/o &
+if [[ ${1} == "" ]]
+then
+backup && editor /usr/local/sbin/o &
+else
+msg "Opening "${1} && editor ${1} &
+fi
 }
 
+daemon()
+{
+msg "daemon mode not yet implemented..."
+}
+
+todo()
+{
+if [[ $2 == "add" ]]
+then
+msg "add func not implemented."
+else
+
+{
+if [[ $(stat -c %s $todofile) == "0" ]]
+then
+echo -e ${tdgreen}"== Your todo list is empty. =="${end}
+else
+{
+lno=0
+while read line
+do
+{
+#incrementing lno
+lno=$(echo ${lno}+1 | bc)
+#figuring out the task priority
+priority=$(echo ${line,,} | cut -d'|' -f 2)
+#color codes for priority
+case $priority in
+	"a") color=$tdred ;;
+	"b") color=$tdgreen ;;
+	"c") color=$tdwhite ;;
+	*) color=$tdwhite ;;
+esac
+#figuring out the task
+task=$(echo ${line} | cut -d'|' -f 3)
+#laying out everything
+printf ${lno}"> "
+case $(echo ${line,,} | cut -d'|' -f 1) in
+	"y") echo -e ${color}$(echo $task | sed "s/./&\xCC\xB6/g")${end} ;;
+	*) echo -e ${color}${task}${end} ;;
+esac
+
+}
+done < $todofile
+
+}
+fi
+}
+
+fi
+
+
+}
 
 #make ~/.o directory and subdirectories if not present.
 #~/.o is needed for storing backups in bak and temp files
 #in tmp dir.
-if [[ ! -d ${HOME}/.o ]]; then msg "On an unrelated note a ~/.o directory was not found, so I am making one..." && mkdir ${HOME}/.o ${HOME}/.o/tmp ${HOME}/.o/bak ${HOME}/.o/log; fi
+if [[ ! -d ${HOME}/.o ]]; then msg "On an unrelated note a ~/.o directory was not found, so I am making one..." && mkdir ${HOME}/.o ${HOME}/.o/tmp ${HOME}/.o/bak ${HOME}/.o/log && touch $todofile; fi
 
 #checking out the parameters
 case $1 in
    "aw") sudo echo 'exec awesome'> ${HOME}/.xinitrc && msg 'AwesomeWM is activated.' && checkX;;
    "lx") sudo echo 'exec lxsession'> ${HOME}/.xinitrc && msg 'LXDE is activated.' && checkX;;
    "bb") sudo echo 'exec blackbox'> $HOME/.xinitrc && msg 'Blackbox is activated.' && checkX;;
+   "e16") sudo echo 'exec e16'> $HOME/.xinitrc && msg 'E16 is activated.' && checkX;;
    "bsend") blue ;;
    "blby") blobby &;;
    "ff") /home/knoppix/scripts/firefox/firefox/firefox &;;
@@ -254,27 +322,31 @@ case $1 in
    "alsa") lxterminal -e alsamixer &;;
    "f") pcmanfm $2 &;;
    "s") startx &;;
-   "neongc") sudo pon dsl-provider && google-chrome 2> /dev/null &;;
+   "neongc") sudo pon dsl-provider 1> /dev/null && o gc & ;;
    "neon") sudo pon dsl-provider;;
    "neof") sudo poff -a;;
    "neus") getnetUsage $2;;
    "neco") sudo pppoeconf ;;
    "up") getUptime ;;
-   "gc") google-chrome 2> /dev/null &;;
-   "docs") pcmanfm $docs.$2 &;;
-   "pics") pcmanfm $pics.$2 &;;
-   "edit") ed $1 $2 $3 $4 ;;
+   "gc") google-chrome $2 $3 $4 $5 $6 $7 2> /dev/null &;;
+   "docs") pcmanfm ${docs}${2} &;;
+   "down") pcmanfm ${down}${2} &;;
+   "edit") ed $2 $3 $4 ;;
    "open") sudo pcmanfm /usr/local/sbin/ &;;
    "git") pcmanfm ${git}${2} &;;
    "gogit") goGit;;
    "bak") backup ;;
    "msg") msg ${2};;
+   "comp") xcompmgr -n -S & ;;
+   "todo") todo $@ ;;
+   "ls") ls -a | grep ${1} ${2} ;;
    "i") inst $2;;
    "k") kll $2 ;;
    "p") prs $2 $3;;
    "c") clear ;;
    "") help ;;
    "m") deadbeef --play-pause &;;
+   "d") daemon ;;
    #if parameters doesn't match then just run what is passed.
    *) $1 $2 $3 $4 $5 $6 $7 $8 $9 &;;
 esac
