@@ -28,6 +28,7 @@ use_fancy_text=1
 # some standard paths and variables
 docs=${HOME}'/Documents/'
 down=${HOME}'/Downloads/'
+pics=${HOME}'/Pictures/'
 git=${docs}'git/'
 sdir=$(cd $(dirname "$0"); pwd)
 todofile=${HOME}'/.o/todo'
@@ -216,22 +217,8 @@ fi
 
 browser()
 {
-#making some bookmarks.
-declare -a bookmarks=("git http://www.github.com","g http://www.google.com")
-arg=$1' '$2' '$3
-msg $arg
-
-#checking if provided arguement is a bookmark, if 
-#not directly pass it on to the browser.
-for i in {0..$(echo ${#bookmarks[@]})}
-do
-if [[ $(echo ${bookmarks[${i}]} | cut -d' ' -f 1) == $arg ]]
-then
-$browser $(echo ${bookmarks[${i}]} | cut -d' ' -f 2)
-else
-$browser "http://www.google.co.in/search?q="${arg}
-fi
-done
+#search google for arguement
+google-chrome
 }
 
 blue()
@@ -257,11 +244,36 @@ msg "daemon mode not yet implemented..."
 
 todo()
 {
+#adding to todo
 if [[ $2 == "add" ]]
 then
-msg "add func not implemented."
-else
+cmd=$@
+#separating the priority and tha task
+priority=$(echo ${cmd} | cut -d' ' -f 3)
+task=$(echo ${cmd} | sed "s/todo\ add\ "${priority}"\ /|/" | cut -d'|' -f 2)
+#appending to $todofile
+echo "n|"${priority}"|"${task} >> $todofile
+o todo
 
+#purging tasks in todo
+elif [[ $2 == "purge" ]]
+then
+index=$3
+sed -i ${index}"d" $todofile
+o todo
+
+#manual editing
+elif [[ $2 == "edit" ]]
+then
+o edit $todofile
+
+#toggle the task status
+elif [[ $2 == "strike" ]]
+then
+index=$3
+echo $index
+
+else
 {
 if [[ $(stat -c %s $todofile) == "0" ]]
 then
@@ -331,6 +343,7 @@ case $1 in
    "gc") google-chrome $2 $3 $4 $5 $6 $7 2> /dev/null &;;
    "docs") pcmanfm ${docs}${2} &;;
    "down") pcmanfm ${down}${2} &;;
+   "pics") pcmanfm ${pics}${2} &;;
    "edit") ed $2 $3 $4 ;;
    "open") sudo pcmanfm /usr/local/sbin/ &;;
    "git") pcmanfm ${git}${2} &;;
@@ -348,7 +361,7 @@ case $1 in
    "m") deadbeef --play-pause &;;
    "d") daemon ;;
    #if parameters doesn't match then just run what is passed.
-   *) $1 $2 $3 $4 $5 $6 $7 $8 $9 &;;
+   *) $@ &;;
 esac
 
 #Good bye...
