@@ -37,7 +37,7 @@ browser=google-chrome
 editor()
 {
 #lxterminal -e "vim "$1
-gedit $@
+gvim $@
 }
 
 # some colors down here are used by the msg and err methods
@@ -334,9 +334,9 @@ case $1 in
    "alsa") lxterminal -e alsamixer &;;
    "f") pcmanfm $2 &;;
    "s") startx &;;
-   "neongc") sudo pon dsl-provider 1> /dev/null && o gc & ;;
-   "neon") sudo pon dsl-provider;;
-   "neof") sudo poff -a;;
+   "neongc") o neon 1> /dev/null && o gc & ;;
+   "neon") sudo ifconfig eth0 up;;
+   "neof") sudo ifconfig eth0 down;;
    "neus") getnetUsage $2;;
    "neco") sudo pppoeconf ;;
    "up") getUptime ;;
