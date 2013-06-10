@@ -37,7 +37,12 @@ browser=google-chrome
 editor()
 {
 #lxterminal -e "vim "$1
+if [[ ${TERM} == "linux" ]]
+then
+vim $@
+else
 gvim $@
+fi
 }
 
 # some colors down here are used by the msg and err methods
@@ -271,7 +276,8 @@ o edit $todofile
 elif [[ $2 == "strike" ]]
 then
 index=$3
-echo $index
+sed -i ${index}"s/n/y/" $todofile
+o todo
 
 else
 {
