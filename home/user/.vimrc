@@ -1,5 +1,13 @@
-set mouse=a
+set rtp+=/usr/lib/python2.7/site-packages/powerline/bindings/vim/
+
+" Always show statusline
+set laststatus=2
+
+" Use 256 colours (Use this setting only if your terminal supports 256 colours)
+set t_Co=256
+
 syntax on
+set mouse=a
 set number
 set history=500
 set ruler
@@ -10,11 +18,3 @@ set si
 set wrap
 set noshowmode
 set showtabline=2
-
-nmap <F4> "zxP
-
-python from powerline.vim import setup as powerline_setup
-python powerline_setup()
-python del powerline_setup
-set laststatus=2
-set t_Co=256
