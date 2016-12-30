@@ -59,7 +59,7 @@ theme.layout_magnifier              = themes_dir .. "/icons/magnifier.png"
 theme.layout_floating               = themes_dir .. "/icons/floating.png"
 theme.layout_termfair               = themes_dir .. "/icons/termfair.png"
 theme.layout_uselesstile            = themes_dir .. "/icons/uselesstile.png"
-theme.layout_uselesspiral            = themes_dir .. "/icons/uselesspiral.png"
+theme.layout_uselesspiral           = themes_dir .. "/icons/uselesspiral.png"
 
 theme.arrl                          = themes_dir .. "/icons/arrl.png"
 theme.arrl_dl                       = themes_dir .. "/icons/arrl_dl.png"
@@ -88,7 +88,7 @@ theme.tasklist_floating             = ""
 theme.tasklist_maximized_horizontal = ""
 theme.tasklist_maximized_vertical   = ""
 
-theme.useless_gap_width = "10"
+theme.useless_gap_width = "15"
 --theme.useless_gap   = 3
 
 return theme
