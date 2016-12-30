@@ -65,6 +65,7 @@ run_once("xsetroot -cursor_name oxy-steel &")
 run_once("kupfer &")
 run_once("xss-lock -- i3lock-fancy &")
 run_once("sudo iwconfig wlp2s0 txpower 0.5")
+run_once("compton")
 awful.util.spawn_with_shell("bash ~/.xinitrc")
 beautiful.border_width = 2
 -- }}}
@@ -93,11 +94,17 @@ musicplr   = terminal .. " -g 130x34-320+16 -e ncmpcpp "
 local layouts = {
     awful.layout.suit.floating,
     awful.layout.suit.tile,
-    awful.layout.suit.tile.bottom,
-    awful.layout.suit.fair,
-    awful.layout.suit.fair.horizontal,
+    lain.layout.uselesstile,
+    --awful.layout.suit.tile.bottom,
+    lain.layout.termfair,
+    lain.layout.uselesspiral,
+    --awful.layout.suit.fair,
+    --awful.layout.suit.fair.horizontal,
 }
 -- }}}
+
+lain.layout.termfair.nmaster = 3
+lain.layout.termfair.ncol = 1
 
 -- {{{ Tags
 tags = {
