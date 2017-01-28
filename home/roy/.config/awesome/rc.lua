@@ -67,7 +67,7 @@ run_once("xss-lock -- i3lock-fancy &")
 run_once("sudo iwconfig wlp2s0 txpower 0.5")
 run_once("compton")
 awful.util.spawn_with_shell("bash ~/.xinitrc")
-beautiful.border_width = 2
+beautiful.border_width = 1
 -- }}}
 
 -- {{{ Variable definitions
@@ -109,7 +109,7 @@ lain.layout.termfair.ncol = 1
 -- {{{ Tags
 tags = {
    names = { "α", "β", "ɣ", "δ", "ε"},
-   layout = { layouts[1], layouts[2], layouts[3], layouts[2], layouts[1] }
+   layout = { layouts[1], layouts[3], layouts[4], layouts[2], layouts[1] }
 }
 
 for s = 1, screen.count() do
@@ -351,7 +351,7 @@ for s = 1, (screen.count()) do
     mytasklist[s] = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, mytasklist.buttons)
 
     -- Create the wibox
-    mywibox[s] = awful.wibox({ position = "top", screen = s, height = 15 })
+    mywibox[s] = awful.wibox({ position = "top", screen = s, height = 18 })
 
     -- Widgets that are aligned to the upper left
     local left_layout = wibox.layout.fixed.horizontal()
