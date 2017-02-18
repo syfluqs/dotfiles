@@ -46,14 +46,23 @@ COVER_BACKGROUND="none"
 [[ -z $file ]] && exit 1
 
 # Art directory
-art="$MUSIC_DIR/${file%/*}"
+#art="$MUSIC_DIR/${file%/*}"
+
+# when no cover is found, use DEFAULT_ART as cover
+#cover="${cover:=$DEFAULT_ART}"
+cover=$DEFAULT_ART
 
 # find every file that matches IMG_REG set the first matching file to be the
 # cover.
-cover="$(find "$art/" -maxdepth 1 -type f | egrep -i -m1 "$IMG_REG")"
+#cover="$(find "$art/" -maxdepth 1 -type f | egrep -i -m1 "$IMG_REG")"
 
-# when no cover is found, use DEFAULT_ART as cover
-cover="${cover:=$DEFAULT_ART}"
+[[ -f $TEMP_PATH ]] && rm $TEMP_PATH
+
+ffmpeg -y -nostats -loglevel 0 -i "$MUSIC_DIR/$file" "$TEMP_PATH"
+#ffmpeg -i "$MUSIC_DIR/$file" "$TEMP_PATH"
+
+[[ -f $TEMP_PATH ]] && cover=$TEMP_PATH
+
 
 # check if art is available
 if [[ -n $cover ]]; then
@@ -61,8 +70,6 @@ if [[ -n $cover ]]; then
         convert "$cover" -scale $COVER_RESIZE -gravity "center" -background "$COVER_BACKGROUND" "$TEMP_PATH"
         cover="$TEMP_PATH"
    fi
-else
-   rm $TEMP_PATH
 fi
 
 exit 0

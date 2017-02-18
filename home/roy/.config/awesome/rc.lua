@@ -94,6 +94,9 @@ mail       = terminal .. " -e mutt "
 iptraf     = term .. " --geometry=940x520 --exec='sudo iptraf-ng -i all'"
 musicplr   = term .. " --geometry=720x36z0 --exec='ncmpcpp'"
 
+local last_brightness_notif = nil
+local last_volume_notif = nil
+
 local layouts = {
     awful.layout.suit.floating,
     awful.layout.suit.tile,
@@ -496,16 +499,21 @@ root.buttons(awful.util.table.join(
 globalkeys = awful.util.table.join(
     -- Take a screenshot
     -- https://github.com/copycat-killer/dots/blob/master/bin/screenshot
-    awful.key({ altkey }, "Print", function() os.execute("scrot -e \'mv $f ~/Pictures/Screenshots/$f\'") end),
+    awful.key({  }, "Print", function() os.execute("scrot -e \'mv $f ~/Pictures/Screenshots/$f\'") end),
 
     -- Tag browsing
     awful.key({ modkey }, "Left",   awful.tag.viewprev       ),
     awful.key({ modkey }, "Right",  awful.tag.viewnext       ),
     awful.key({ modkey }, "Escape", awful.tag.history.restore),
+    awful.key({ modkey }, ",",   awful.tag.viewprev       ),
+    awful.key({ modkey }, ".",  awful.tag.viewnext       ),
+    -- awful.key({ altkey }, "/", awful.tag.history.restore),
+
 
     -- Non-empty tag browsing
-    awful.key({ altkey, "Shift"}, "Left", function () lain.util.tag_view_nonempty(-1) end),
-    awful.key({ altkey, "Shift"}, "Right", function () lain.util.tag_view_nonempty(1) end),
+    awful.key({ altkey }, ".", function () lain.util.tag_view_nonempty(-1) end),
+    awful.key({ altkey }, "/", function () lain.util.tag_view_nonempty(1) end),
+
 
     -- Default client focus
     awful.key({ altkey }, "k",
@@ -559,13 +567,22 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey, "Control" }, "j", function () awful.screen.focus_relative( 1) end),
     awful.key({ modkey, "Control" }, "k", function () awful.screen.focus_relative(-1) end),
     awful.key({ modkey,           }, "u", awful.client.urgent.jumpto),
-    --[[awful.key({ modkey,           }, "Tab",
-        function ()
-            awful.client.focus.history.previous()
-            if client.focus then
-                client.focus:raise()
-            end
-        end),]]
+    -- awful.key({ altkey,           }, "Tab",
+    --     function ()
+    --         -- awful.client.focus.history.previous()
+    --         -- if client.focus then
+    --         --     client.focus:raise()
+    --         -- end
+    --         alttab.switch(1, "Super_L", "Tab", "ISO_Left_Tab")
+    --     end),
+    -- awful.key({ altkey, "Shift"    }, "Tab",
+    --     function ()
+    --         -- awful.client.focus.history.previous()
+    --         -- if client.focus then
+    --         --     client.focus:raise()
+    --         -- end
+    --         alttab.switch(-1, "Super_L", "Tab", "ISO_Left_Tab")
+    --     end),
     --New alt-tab
     awful.key({ modkey,           }, "Tab",
         function ()
@@ -595,7 +612,8 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey, "Shift"   }, "q",      awesome.quit),
 
     -- Dropdown terminal
-    awful.key({ modkey,	          }, "`",      function () drop("termite") end),
+    -- awful.key({ modkey,           }, "`",      function () drop("termite") end),
+    awful.key({ modkey,	          }, "`",      function () drop("termite -e 'tmuxinator drop_term'") end),
 
     -- Widgets popups
     awful.key({ altkey,           }, "c",      function () lain.widgets.calendar:show(7) end),
@@ -654,6 +672,9 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey }, "s", function () awful.spawn(gui_editor) end),
     awful.key({ modkey }, "g", function () awful.spawn(graphics) end),
 
+    -- Make xpad pop to front
+    -- awful.key({ modkey }, "a", function () for i in client.get() do if i.name=="Xpad" then i.raise() end end end),
+
     -- Prompt
     awful.key({ modkey }, "r", function () awful.screen.focused().mypromptbox:run() end),
     awful.key({ modkey }, "x",
@@ -672,14 +693,57 @@ globalkeys = awful.util.table.join(
               end),
 
     -- Volume key binding
-    awful.key({ }, "XF86AudioRaiseVolume",  APW.Up),
-    awful.key({ }, "XF86AudioLowerVolume",  APW.Down),
-    awful.key({ }, "XF86AudioMute",         APW.ToggleMute),
+    awful.key({ }, "XF86AudioRaiseVolume",  function() 
+        APW.Up()
+        -- awful.spawn.easy_async('echo $(pactl list sinks | grep \'Active Port\')$(pactl list sinks | grep Volume)', function(stdout, stderr, reason, exit_code)
+        --   naughty.destroy(last_volume_notif, naughty.notificationClosedReason.dismissedByUser)
+        --   a = string.match(stdout, "Active%sPort:%s%a+%-%a+%-(%a+)%s*Volume:%s*front%-left:%s*%d+%s*/%s(%d+)%%")
+        --   last_volume_notif = naughty.notify {title = "Volume", text = a:sub(1,1):upper()..a:sub(2), border_width = 3}
+        --   end)
+        vol = assert(io.popen('echo $(pactl list sinks | grep \"Active Port\")$(pactl list sinks | grep Volume)'))
+        -- naughty.destroy(last_volume_notif, naughty.notificationClosedReason.dismissedByUser)
+        -- a = string.match(vol:read(), "Active%sPort:%s%a+%-%a+%-(%a+)%s*Volume:%s*front%-left:%s*%d+%s*/%s(%d+)%%")
+        a = string.match(vol:read(), "Active%sPort:%s%a+%-%a+%-%a+%s*Volume:%s*front%-left:%s*%d+%s*/%s(%d+)%%")
+        last_volume_notif = naughty.notify({title = "Volume Control", text = a.."%", border_width = 3, replaces_id = last_volume_notif}).id
+        end),
+    awful.key({ }, "XF86AudioLowerVolume",  function() 
+        APW.Down()
+        -- awful.spawn.easy_async('echo $(pactl list sinks | grep \'Active Port\')$(pactl list sinks | grep Volume)', function(stdout, stderr, reason, exit_code)
+        --   naughty.destroy(last_volume_notif, naughty.notificationClosedReason.dismissedByUser)
+        --   a = string.match(stdout, "Active%sPort:%s%a+%-%a+%-(%a+)%s*Volume:%s*front%-left:%s*%d+%s*/%s(%d+)%%")
+        --   last_volume_notif = naughty.notify {title = "Volume", text = a:sub(1,1):upper()..a:sub(2), border_width = 3}
+        --   end)
+        vol = assert(io.popen('echo $(pactl list sinks | grep \"Active Port\")$(pactl list sinks | grep Volume)'))
+        -- naughty.destroy(last_volume_notif, naughty.notificationClosedReason.dismissedByUser)
+        a = string.match(vol:read(), "Active%sPort:%s%a+%-%a+%-%a+%s*Volume:%s*front%-left:%s*%d+%s*/%s(%d+)%%")
+        -- last_volume_notif = naughty.notify {title = "Volume", text = a:sub(1,1):upper()..a:sub(2), border_width = 3}
+        last_volume_notif = naughty.notify({title = "Volume Control", text = a.."%", border_width = 3, replaces_id = last_volume_notif}).id
+        end),
+    awful.key({ }, "XF86AudioMute", function()
+        APW.ToggleMute()
+        -- awful.spawn.easy_async("echo $(pactl list sinks | grep Mute)", function(stdout, stderr, reason, exit_code)
+        --   naughty.destroy(last_volume_notif, naughty.notificationClosedReason.dismissedByUser)
+        --   last_volume_notif = naughty.notify {title = "Volume", text = stdout..stderr..exit_code, border_width = 3}
+        --   end)
+        vol = assert(io.popen("echo $(pactl list sinks | grep Mute)"))
+        -- naughty.destroy(last_volume_notif, naughty.notificationClosedReason.dismissedByUser)
+        last_volume_notif = naughty.notify({title = "Volume Control", text = vol:read(), replaces_id = last_volume_notif}).id
+        end),
 
     awful.key({ }, "XF86MonBrightnessDown", function ()
-        awful.spawn("xbacklight -dec 2") end),
+        awful.spawn("xbacklight -dec 2")
+        awful.spawn.easy_async('xbacklight', function(stdout, stderr, reason, exit_code)
+          -- naughty.destroy(last_brightness_notif, naughty.notificationClosedReason.dismissedByUser)
+          last_brightness_notif = naughty.notify({ title = "Screen Brightness "..string.match(stdout,"(%d+).%d").."%", text = "" , border_width = 3, replaces_id = last_brightness_notif}).id
+          end)
+    end),
     awful.key({ }, "XF86MonBrightnessUp", function ()
-        awful.spawn("xbacklight -inc 2") end)
+        awful.spawn("xbacklight -inc 2")
+        awful.spawn.easy_async('xbacklight', function(stdout, stderr, reason, exit_code)
+          -- naughty.destroy(last_brightness_notif, naughty.notificationClosedReason.dismissedByUser)
+          last_brightness_notif = naughty.notify({ title = "Screen Brightness "..string.match(stdout,"(%d+).%d").."%", text = "" , border_width = 3, replaces_id = last_brightness_notif}).id
+          end)
+        end)
 )
 
 clientkeys = awful.util.table.join(

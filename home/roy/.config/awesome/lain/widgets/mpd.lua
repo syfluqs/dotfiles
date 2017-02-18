@@ -22,6 +22,9 @@ local string       = { format   = string.format,
                        match    = string.match,
                        gmatch   = string.gmatch }
 
+local beautiful = require("beautiful")
+beautiful.init(os.getenv("HOME") .. "/.config/awesome/themes/powerarrow-darker/theme.lua")
+
 local setmetatable = setmetatable
 
 -- MPD infos
@@ -36,7 +39,8 @@ local function worker(args)
     local port        = args.port or "6600"
     local music_dir   = args.music_dir or os.getenv("HOME") .. "/Music"
     local cover_size  = args.cover_size or 100
-    local default_art = args.default_art or ""
+    -- local default_art = args.default_art or ""
+    local default_art = args.default_art or beautiful.mpd_default_art
     local followmouse = args.followmouse or false
     local echo_cmd    = args.echo_cmd or "echo"
     local settings    = args.settings or function() end
@@ -83,8 +87,11 @@ local function worker(args)
                 end
             end
 
-            mpd_notification_preset.text = string.format("%s (%s) - %s\n%s", mpd_now.artist,
-                                           mpd_now.album, mpd_now.date, mpd_now.title)
+            -- mpd_notification_preset.text = string.format("%s (%s) - %s\n%s", mpd_now.artist,
+                                           -- mpd_now.album, mpd_now.date, mpd_now.title)
+            mpd_notification_preset.title = string.format("%s",mpd_now.title)
+            mpd_notification_preset.text = string.format("%s (%s) - %s", mpd_now.artist,
+                                           mpd_now.album, mpd_now.date)
             widget = mpd.widget
             settings()
 

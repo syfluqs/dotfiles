@@ -57,7 +57,7 @@ theme.layout_max                    = themes_dir .. "/icons/max.png"
 theme.layout_fullscreen             = themes_dir .. "/icons/fullscreen.png"
 theme.layout_magnifier              = themes_dir .. "/icons/magnifier.png"
 theme.layout_floating               = themes_dir .. "/icons/floating.png"
-theme.layout_centerfair             = themes_dir .. "/icons/termfair.png"
+theme.layout_termfair               = themes_dir .. "/icons/termfair.png"
 theme.layout_uselesstile            = themes_dir .. "/icons/uselesstile.png"
 theme.layout_uselesspiral           = themes_dir .. "/icons/uselesspiral.png"
 
@@ -82,8 +82,6 @@ theme.widget_vol_no                 = themes_dir .. "/icons/vol_no.png"
 theme.widget_vol_mute               = themes_dir .. "/icons/vol_mute.png"
 theme.widget_mail                   = themes_dir .. "/icons/mail.png"
 theme.widget_mail_on                = themes_dir .. "/icons/mail_on.png"
-
-theme.mpd_default_art               = themes_dir .. "/icons/default_art.png"
 
 theme.tasklist_disable_icon         = false
 theme.tasklist_floating             = ""
