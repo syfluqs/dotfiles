@@ -41,3 +41,5 @@ windows:
         #- 'tty-clock -C 4 -Sscbtn'
         - 'sleep 1 && ncmpcpp'
       post: clear
+  - timer:
+      - 'sleep 1 && clear'

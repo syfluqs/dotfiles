@@ -53,3 +53,7 @@ find_text() {
 color_less () {
     pygmentize -f terminal "$1" | less -R -N -J
 }
+
+timer() {
+    termdown $1 && (mpg123 -q ~/Downloads/digitalwat_6o4ufvsu.mp3 2> /dev/null)
+}
