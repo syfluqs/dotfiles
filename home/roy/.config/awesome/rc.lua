@@ -642,24 +642,34 @@ globalkeys = awful.util.table.join(
     --     end),
 
     -- MPD control
-    awful.key({ altkey, "Control" }, "Up",
+    awful.key({ modkey }, "#84", -- Numkey5
         function ()
             awful.util.spawn_with_shell("mpc toggle || ncmpc toggle || pms toggle")
             mpdwidget.update()
         end),
-    awful.key({ altkey, "Control" }, "Down",
+    awful.key({ modkey }, "#88", -- Numkey2
         function ()
             awful.util.spawn_with_shell("mpc stop || ncmpc stop || pms stop")
             mpdwidget.update()
         end),
-    awful.key({ altkey, "Control" }, "Left",
+    awful.key({ modkey }, "#87", -- Numkey1
         function ()
             awful.util.spawn_with_shell("mpc prev || ncmpc prev || pms prev")
             mpdwidget.update()
         end),
-    awful.key({ altkey, "Control" }, "Right",
+    awful.key({ modkey }, "#89", -- Numkey3
         function ()
             awful.util.spawn_with_shell("mpc next || ncmpc next || pms next")
+            mpdwidget.update()
+        end),
+    awful.key({ modkey }, "#85", -- Numkey4
+        function ()
+            awful.util.spawn_with_shell("mpc seek +00:00:05")
+            mpdwidget.update()
+        end),
+    awful.key({ modkey }, "#83", -- Numkey6
+        function ()
+            awful.util.spawn_with_shell("mpc seek -00:00:05")
             mpdwidget.update()
         end),
 
