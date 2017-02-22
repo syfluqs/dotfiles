@@ -57,3 +57,7 @@ color_less () {
 timer() {
     termdown $1 && (mpg123 -q ~/Downloads/digitalwat_6o4ufvsu.mp3 2> /dev/null)
 }
+
+timer_perpetual() {
+    termdown $1 && (mpg123 -q ~/Downloads/digitalwat_6o4ufvsu.mp3 2> /dev/null) && timer_perpetual $1
+}
