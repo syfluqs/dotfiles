@@ -68,6 +68,7 @@ run_once("kupfer &")
 run_once("xss-lock -- i3lock-fancy -g -p &")
 run_once("sudo iwconfig wlp2s0 txpower 0.5")
 run_once("compton")
+run_once("mpd")
 awful.util.spawn_with_shell("bash ~/.xinitrc")
 beautiful.border_width = 1
 -- }}}
