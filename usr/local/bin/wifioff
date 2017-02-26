@@ -1,0 +1,3 @@
+#!/bin/zsh
+
+nmcli radio wifi off &

@@ -1,0 +1,3 @@
+#!/usr/bin/zsh
+
+nmcli dev connect wlp2s0

@@ -1,0 +1,3 @@
+#!/bin/bash
+cd "/home/roy/Downloads/simu"
+java -jar "/home/roy/Downloads/simu/circuit.jar" &

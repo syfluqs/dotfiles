@@ -1,0 +1,5 @@
+#!/bin/zsh
+
+wifioff
+sleep 0.5
+wifion
