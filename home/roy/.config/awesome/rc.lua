@@ -69,6 +69,7 @@ run_once("xss-lock -- i3lock-fancy -g -p &")
 run_once("sudo iwconfig wlp2s0 txpower 0.5")
 run_once("compton")
 run_once("mpd")
+run_once("xgamma -gamma 0.75")
 awful.util.spawn_with_shell("bash ~/.xinitrc")
 beautiful.border_width = 1
 -- }}}
@@ -93,7 +94,8 @@ gui_editor = "subl"
 graphics   = "gimp"
 mail       = terminal .. " -e mutt "
 iptraf     = term .. " --geometry=940x520 --exec='sudo iptraf-ng -i all'"
-musicplr   = term .. " --geometry=720x36z0 --exec='ncmpcpp'"
+-- musicplr   = term .. " --geometry=720x36z0 --exec='ncmpcpp'"
+musicplr   = "mpc toggle"
 
 local last_brightness_notif = nil
 local last_volume_notif = nil
@@ -643,32 +645,32 @@ globalkeys = awful.util.table.join(
     --     end),
 
     -- MPD control
-    awful.key({ modkey }, "#84", -- Numkey5
+    awful.key({ "Control" }, "#84", -- Numkey5
         function ()
             awful.util.spawn_with_shell("mpc toggle || ncmpc toggle || pms toggle")
             mpdwidget.update()
         end),
-    awful.key({ modkey }, "#88", -- Numkey2
+    awful.key({ "Control" }, "#88", -- Numkey2
         function ()
             awful.util.spawn_with_shell("mpc stop || ncmpc stop || pms stop")
             mpdwidget.update()
         end),
-    awful.key({ modkey }, "#87", -- Numkey1
+    awful.key({ "Control" }, "#87", -- Numkey1
         function ()
             awful.util.spawn_with_shell("mpc prev || ncmpc prev || pms prev")
             mpdwidget.update()
         end),
-    awful.key({ modkey }, "#89", -- Numkey3
+    awful.key({ "Control" }, "#89", -- Numkey3
         function ()
             awful.util.spawn_with_shell("mpc next || ncmpc next || pms next")
             mpdwidget.update()
         end),
-    awful.key({ modkey }, "#85", -- Numkey4
+    awful.key({ "Control" }, "#85", -- Numkey4
         function ()
             awful.util.spawn_with_shell("mpc seek +00:00:05")
             mpdwidget.update()
         end),
-    awful.key({ modkey }, "#83", -- Numkey6
+    awful.key({ "Control" }, "#83", -- Numkey6
         function ()
             awful.util.spawn_with_shell("mpc seek -00:00:05")
             mpdwidget.update()
@@ -742,15 +744,19 @@ globalkeys = awful.util.table.join(
         end),
 
     awful.key({ }, "XF86MonBrightnessDown", function ()
-        awful.spawn("xbacklight -dec 2")
-        awful.spawn.easy_async('xbacklight', function(stdout, stderr, reason, exit_code)
+        --awful.spawn("xbacklight -dec 2")
+        awful.spawn("light -U 2")
+        --awful.spawn.easy_async('xbacklight', function(stdout, stderr, reason, exit_code)
+        awful.spawn.easy_async('light', function(stdout, stderr, reason, exit_code)
           -- naughty.destroy(last_brightness_notif, naughty.notificationClosedReason.dismissedByUser)
           last_brightness_notif = naughty.notify({ title = "Screen Brightness "..string.match(stdout,"(%d+).%d").."%", text = "" , border_width = 3, replaces_id = last_brightness_notif}).id
           end)
     end),
     awful.key({ }, "XF86MonBrightnessUp", function ()
-        awful.spawn("xbacklight -inc 2")
-        awful.spawn.easy_async('xbacklight', function(stdout, stderr, reason, exit_code)
+        --awful.spawn("xbacklight -inc 2")
+        awful.spawn("light -A 2")
+        --awful.spawn.easy_async('xbacklight', function(stdout, stderr, reason, exit_code)
+        awful.spawn.easy_async('light', function(stdout, stderr, reason, exit_code)
           -- naughty.destroy(last_brightness_notif, naughty.notificationClosedReason.dismissedByUser)
           last_brightness_notif = naughty.notify({ title = "Screen Brightness "..string.match(stdout,"(%d+).%d").."%", text = "" , border_width = 3, replaces_id = last_brightness_notif}).id
           end)
@@ -893,9 +899,6 @@ awful.rules.rules = {
 
     { rule = { instance = "plugin-container" },
           properties = { screen = 1, tag = "1" } },
-
-	  { rule = { class = "Gimp" },
-     	    properties = { screen = 1, tag = "4" } },
 
     { rule = { class = "Gimp", role = "gimp-image-window" },
           properties = { maximized_horizontal = true,
