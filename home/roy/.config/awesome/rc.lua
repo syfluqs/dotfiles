@@ -64,12 +64,14 @@ run_once("syndaemon -d -i 0.2 -k")
 run_once("xpad")
 run_once("sudo rmmod pcspkr")
 run_once("xsetroot -cursor_name oxy-steel &")
-run_once("kupfer &")
+run_once("cerebro &")
 run_once("xss-lock -- i3lock-fancy -g -p &")
 run_once("sudo iwconfig wlp2s0 txpower 0.5")
 run_once("compton")
 run_once("mpd")
 run_once("xgamma -gamma 0.75")
+run_once("sudo chmod 777 /var/run/sdp")
+run_once("/opt/urserver/urserver --daemon")
 awful.util.spawn_with_shell("bash ~/.xinitrc")
 beautiful.border_width = 1
 -- }}}
@@ -83,7 +85,8 @@ beautiful.init(os.getenv("HOME") .. "/.config/awesome/themes/powerarrow-darker/t
 modkey     = "Mod4"
 altkey     = "Mod1"
 term       = "termite"
-terminal   = term .. " -e tmux"
+-- terminal   = term .. " -e tmux"
+terminal = term
 editor     = os.getenv("EDITOR") or "nano" or "vi"
 editor_cmd = terminal .. " -e " .. editor
 
@@ -124,7 +127,7 @@ lain.layout.centerfair.ncol = 1
 tags = {
    count = 5,
    names = { "α", "β", "ɣ", "δ", "ε"},
-   layout = { layouts[1], layouts[3], layouts[4], layouts[2], layouts[1] },
+   layout = { layouts[1], layouts[3], layouts[1], layouts[2], layouts[1] },
    gap = 5
 }
 
