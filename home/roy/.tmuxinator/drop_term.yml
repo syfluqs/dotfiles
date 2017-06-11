@@ -37,9 +37,14 @@ windows:
       # 'before' represents legacy functionality and will be deprecated in a future release, in favour of 'after'
       # synchronize: after
       panes:
-        - 'sleep 1 && clear'
+        - 'sleep 1 && clear && archey'
         #- 'tty-clock -C 4 -Sscbtn'
         - 'sleep 1 && ncmpcpp'
       post: clear
   - timer:
       - 'sleep 1 && clear'
+  - blog:
+      layout: even-horizontal
+      panes:
+        - 'cd ~/projects/syfluqs.github.io && sleep 1 && clear'
+        - 'cd ~/projects/syfluqs.github.io && sleep 1 && clear'
