@@ -26,7 +26,7 @@ alias subl='subl >/dev/null 2>/dev/null'
 alias auto-reflector='sudo reflector --verbose -l 200 -p http --sort rate --save /etc/pacman.d/mirrorlist'
 alias to_clip='xclip -selection clipboard'
 alias scrot="scrot -e 'mv \$f ~/Pictures/Screenshots/\$f'"
-export PATH=/home/roy/.gem/ruby/2.3.0/bin:$PATH
+export PATH=/home/roy/.gem/ruby/2.3.0/bin:/home/roy/.gem/ruby/2.4.0/bin:$PATH
 export GSS_DIR=/home/roy/gdiso
 export TERM=xterm-256color
 trap exit EXIT
@@ -61,3 +61,4 @@ timer() {
 timer_perpetual() {
     termdown $1 && (mpg123 -q ~/Downloads/digitalwat_6o4ufvsu.mp3 2> /dev/null) && timer_perpetual $1
 }
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
